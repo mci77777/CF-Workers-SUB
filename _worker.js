@@ -149,7 +149,7 @@ export default {
 				console.log(请求订阅响应内容);
 				req_data += 请求订阅响应内容[0].join('\n');
 				订阅转换URL += "|" + 请求订阅响应内容[1];
-				第三方Clash配置 = 请求订阅响应内容[2] || [];
+				第三方Clash配置 = 订阅格式 === 'clash' ? await 获取Clash订阅配置(订阅链接数组, request, 追加UA, userAgentHeader) : (请求订阅响应内容[2] || []);
 				if (订阅格式 === 'base64' && !isSubConverterRequest && 请求订阅响应内容[1].includes('://')) {
 					subConverterUrl = `${subProtocol}://${subConverter}/sub?target=mixed&url=${encodeURIComponent(请求订阅响应内容[1])}&insert=false&config=${encodeURIComponent(subConfig)}&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false&new_name=true`;
 					try {
@@ -381,6 +381,21 @@ function 合并Clash订阅(主配置, 第三方Clash配置 = []) {
 	}
 
 	return 主配置;
+}
+
+async function 获取Clash订阅配置(api, request, 追加UA, userAgentHeader) {
+	const clash配置 = [];
+	for (const apiUrl of [...new Set(api)].filter(item => item?.trim?.())) {
+		try {
+			const response = await getUrl(request, apiUrl, 追加UA, userAgentHeader);
+			if (!response.ok) continue;
+			const content = await response.text();
+			if (content.includes('proxies:')) clash配置.push(content);
+		} catch (error) {
+			console.log('获取Clash订阅配置失败: ' + apiUrl);
+		}
+	}
+	return clash配置;
 }
 
 async function proxyURL(proxyURL, url) {
