@@ -365,7 +365,10 @@ function 提取Clash代理内容(content) {
 		proxyLines.push(line);
 	}
 
-	return proxyLines.join('\n').trim();
+	while (proxyLines.length > 0 && !proxyLines[0].trim()) proxyLines.shift();
+	while (proxyLines.length > 0 && !proxyLines[proxyLines.length - 1].trim()) proxyLines.pop();
+
+	return proxyLines.join('\n');
 }
 
 function 合并Clash订阅(主配置, 第三方Clash配置 = []) {
