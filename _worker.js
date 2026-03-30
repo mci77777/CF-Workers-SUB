@@ -390,7 +390,7 @@ async function 获取Clash订阅配置(api, request, 追加UA, userAgentHeader) 
 	const clash配置 = [];
 	for (const apiUrl of [...new Set(api)].filter(item => item?.trim?.())) {
 		try {
-			const response = await getUrl(request, apiUrl, 追加UA, userAgentHeader);
+			const response = await getUrl(request, apiUrl, 'clash', 'Clash Verge/2.0');
 			if (!response.ok) continue;
 			const content = await response.text();
 			if (content.includes('proxies:')) clash配置.push(content);
